@@ -51,7 +51,7 @@ module.exports = (app, nuxt, connection) => {
       const create_file = await fileRepository.create({ name, type, end_time })
       const save_file = await fileRepository.save(create_file)
 
-      logger.info(save_file.name + save_file.type, req.ip)
+      logger.info(save_file.name + save_file.type)
 
       save_file.name = Buffer.from(save_file.name).toString('base64')
       save_file.url = process.env.BASEURL + 'preview/' + save_file.name
@@ -69,13 +69,13 @@ module.exports = (app, nuxt, connection) => {
     const name = Buffer.from(req.query.id, 'base64').toString()
     const file = await fileRepository.findOne({ where: { name } })
     if (!file) {
-      logger.error(file.name + file.type, req.ip)
+      logger.error(file.name + file.type)
       res.json({ code: 400, message: '文件不存在' })
     } else if (parseInt(file.end_time) < dayjs().format('YYYYMMDDHHmmssSSS')) {
-      logger.error(file.name + file.type, req.ip)
+      logger.error(file.name + file.type)
       res.json({ code: 400, message: '文件不存在' })
     } else {
-      logger.info(file.name + file.type, req.ip)
+      logger.info(file.name + file.type)
       file.file = process.env.BASEURL + file.name + file.type
       res.json({ code: 200, data: file })
     }
