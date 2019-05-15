@@ -18,8 +18,18 @@ module.exports = {
       type: "varchar"
     },
     created:{
+      precision: null,
       type: "timestamp",
-      default: dayjs().format('YYYY-MM-DD HH:mm:ss')
+      default: () => "CURRENT_TIMESTAMP",
+      createDate:true,
+      transformer: {
+        from: (date) => {
+          return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
+        },
+        to: (date) => {
+          return date
+        }
+      }
     }
   }
 };
