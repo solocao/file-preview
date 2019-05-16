@@ -59,7 +59,7 @@ typeorm
       // node schedule
       function scheduleCronstyle() {
         const logger = log4js.getLogger('schedule');
-        schedule.scheduleJob('0 0 0 * * *', function () {
+        schedule.scheduleJob('0 0 0-23 * * *', function () {
           logger.info('start schedule tasks')
           deleteFile(resolve_path)
         });

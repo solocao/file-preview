@@ -2,8 +2,8 @@ const { handleRequest, transformTime, writeFile } = require('../utils')
 const path = require('path')
 const multer = require('multer')
 const upload = multer()
-const dayjs = require('dayjs')
 const log4js = require('log4js');
+const math = require('mathjs')
 
 module.exports = (app, nuxt, connection) => {
   const fileRepository = connection.getRepository("File");
@@ -21,7 +21,7 @@ module.exports = (app, nuxt, connection) => {
   app.post('/upload', upload.single('file'), async (req, res) => {
     const logger = log4js.getLogger('upload');
     const file = req.file
-    
+
     const word_type = ['.docx', '.dotx']
     const excel_type = ['.xlsx', '.xlsb', '.xls', '.xlsm']
     const ppt_type = ['.pptx', '.ppsx', '.ppt', '.pps', '.potx', '.ppsm']
@@ -42,7 +42,7 @@ module.exports = (app, nuxt, connection) => {
     }
 
     const name = transformTime()
-    const end_time = parseInt(name) + parseInt(process.env.EXPIREDATE)
+    const end_time = math.add(math.bignumber(name), math.bignumber(process.env.EXPIREDATE)) + ''
     const type = path.extname(file.originalname)
     const transformFilename = name + type
     const file_path = '../../uploads'
@@ -69,15 +69,18 @@ module.exports = (app, nuxt, connection) => {
     const name = Buffer.from(req.query.id, 'base64').toString()
     const file = await fileRepository.findOne({ where: { name } })
     if (!file) {
-      logger.error(file.name + file.type)
-      res.json({ code: 400, message: '文件不存在' })
-    } else if (parseInt(file.end_time) < dayjs().format('YYYYMMDDHHmmssSSS')) {
-      logger.error(file.name + file.type)
+      logger.error('文件不存在')
       res.json({ code: 400, message: '文件不存在' })
     } else {
-      logger.info(file.name + file.type)
-      file.file = process.env.BASEURL + file.name + file.type
-      res.json({ code: 200, data: file })
+      const now_time = transformTime()
+      if (math.compare(math.bignumber(file.end_time), math.bignumber(now_time)) == -1) {
+        logger.error('文件不存在')
+        res.json({ code: 400, message: '文件不存在' })
+      } else {
+        logger.info(file.name + file.type)
+        file.file = process.env.BASEURL + file.name + file.type
+        res.json({ code: 200, data: file })
+      }
     }
   })
 }
