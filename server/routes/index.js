@@ -4,6 +4,7 @@ const multer = require('multer')
 const upload = multer()
 const log4js = require('log4js');
 const math = require('mathjs')
+const dayjs = require('dayjs')
 
 module.exports = (app, nuxt, connection) => {
   const fileRepository = connection.getRepository("File");
@@ -41,8 +42,9 @@ module.exports = (app, nuxt, connection) => {
       res.status(400).json({ message: '不支持该文件格式' })
     }
 
-    const name = transformTime()
-    const end_time = math.add(math.bignumber(name), math.bignumber(process.env.EXPIREDATE)) + ''
+    const start_time = dayjs().format('YYYY-MM-DD HH:mm:ss:SSS')
+    const name=dayjs(start_time).format('YYYYMMDDHHmmssSSS')
+    const end_time = dayjs(start_time).add(3,'day').format('YYYYMMDDHHmmssSSS')
     const type = path.extname(file.originalname)
     const transformFilename = name + type
     const file_path = '../../uploads'

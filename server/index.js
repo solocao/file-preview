@@ -61,7 +61,7 @@ typeorm
         const logger = log4js.getLogger('schedule');
         schedule.scheduleJob('0 0 0-23 * * *', function () {
           logger.info('start schedule tasks')
-          deleteFile(resolve_path)
+          deleteFile(resolve_path,connection)
         });
       }
       scheduleCronstyle();

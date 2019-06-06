@@ -30,7 +30,6 @@ DB_USETNAME=root
 DB_PASSWORD=123456
 DB_DATABASE=file_preview
 DB_SYNC=true
-EXPIREDATE=3000000000
 BASEURL=http://localhost:3001/
 
 # 本地启动项目,访问地址是 http://localhost:3001

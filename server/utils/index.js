@@ -2,6 +2,7 @@ const dayjs = require('dayjs')
 const fs = require('fs')
 const path = require('path')
 const log4js = require('log4js');
+const math = require('mathjs')
 
 /**
  * 请求处理
@@ -65,14 +66,17 @@ const writeFile = (fileBuffer, transformFilename, relative_path) => {
  * 删除过期文件
  * @param resolve_path 
  */
-const deleteFile = resolve_path => {
+const deleteFile = (resolve_path,connection) => {
+  const fileRepository = connection.getRepository("File");
   if (fs.existsSync(resolve_path)) {
     const logger = log4js.getLogger('delete');
     const files = fs.readdirSync(resolve_path)
-    files.forEach(item => {
-      const effective_time = parseInt(path.basename(item, path.extname(item))) + parseInt(process.env.EXPIREDATE)
+    files.forEach(async item => {
+      const name=path.basename(item, path.extname(item))
+      const file=await fileRepository.findOne({where:{name}})
+      const effective_time=file.end_time
       const now_time = dayjs().format('YYYYMMDDHHmmssSSS')
-      if (effective_time < now_time) {
+      if (math.compare(math.bignumber(effective_time), math.bignumber(now_time)) == -1) {
         try {
           fs.unlinkSync(path.join(resolve_path, item));
           logger.info(item)
