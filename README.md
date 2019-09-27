@@ -1,6 +1,6 @@
 # file-preview
 
-> word、excel、ppt 和 pdf 文件在线预览。[查看](https://view.ivanweb.cn/)
+> word、excel、ppt 和 pdf 文件在线预览。
 
 ## 使用的技术
 * Nuxt.js
